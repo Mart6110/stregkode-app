@@ -10,7 +10,7 @@ const NavBar = () => {
       C42.9,8.8,44.5,8.1,46.4,8.1z"></path><path className="st0" d="M52.8,18.4h-0.5c-0.7,2.6-2.9,4.4-5.9,4.4c-2,0-3.6-0.8-4.7-2v9.3c1.5,0.4,3.1,0.7,4.7,0.7
       c5.7,0,10.7-2.8,13.4-7.2L52.8,18.4z"></path><title>ZBC - Forsiden</title></svg>
       <Heading as="h1" size="lg" ml={4}>
-        Stregkode system
+        Inventar System
       </Heading>
       <Box></Box>
     </Box>

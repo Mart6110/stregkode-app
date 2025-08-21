@@ -1,7 +1,12 @@
-import { Box, Heading } from "@chakra-ui/react"
+import { Box, Heading, Card, IconButton, Menu, Portal } from "@chakra-ui/react"
+import { useState } from "react"
+import { LuChevronDown } from 'react-icons/lu'
 import Table from "../Components/Table/Table"
+import SearchField from "../Components/SearchField/SearchField"
 
 function Main() {
+  const [globalFilter, setGlobalFilter] = useState('')
+
   // Sample data for the table - Electronics inventory
   const data = [
     { id: 1, name: "Arduino Uno R3", stock: 25, department: "Microcontrollers" },
@@ -40,13 +45,44 @@ function Main() {
 
   return (
     <Box p={6}>
-      <Table 
-        title="Inventarliste"
-        data={data} 
-        columns={columns}
-        enableSorting={true}
-        enableFiltering={true}
-      />
+      <Card.Root>
+        <Card.Header flexDir={"row"} justifyContent="space-between" alignItems="center">
+          <Card.Title>Inventarliste</Card.Title>
+          <Box maxW="300px">
+            <SearchField
+              value={globalFilter ?? ''}
+              onChange={value => setGlobalFilter(String(value))}
+              placeholder="Search..."
+              debounce={300}
+            />
+          </Box>
+          <Menu.Root>
+            <Menu.Trigger asChild>
+              <IconButton size={'sm'} bg={'#085646'}>
+                <LuChevronDown />
+              </IconButton>
+            </Menu.Trigger>
+            <Portal>
+              <Menu.Positioner>
+                <Menu.Content>
+                  <Menu.Item value="new-component">Tilføj nyt Objekt</Menu.Item>
+                  <Menu.Item value="new-txt">Tilføj ny type</Menu.Item>
+                </Menu.Content>
+              </Menu.Positioner>
+            </Portal>
+          </Menu.Root>
+        </Card.Header>
+        <Card.Body>
+          <Table 
+            data={data} 
+            columns={columns}
+            globalFilter={globalFilter}
+            setGlobalFilter={setGlobalFilter}
+            enableSorting={true}
+            enableFiltering={true}
+          />
+        </Card.Body>
+      </Card.Root>
     </Box>
   )
 }

@@ -1,12 +1,6 @@
 import {
-    Card,
     Table,
     Box,
-    ButtonGroup,
-    Button,
-    IconButton,
-    Menu,
-    Portal,
 } from '@chakra-ui/react'
 import {
     useReactTable,
@@ -20,10 +14,8 @@ import {
     compareItems,
 } from '@tanstack/match-sorter-utils'
 import React, { useState } from 'react'
-import SearchField from '../SearchField/SearchField'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSort, faSortUp, faSortDown } from '@fortawesome/free-solid-svg-icons'
-import { LuChevronDown } from 'react-icons/lu'
 
 // Define a custom fuzzy filter function that will apply ranking info to rows
 const fuzzyFilter = (row, columnId, value, addMeta) => {
@@ -55,9 +47,7 @@ const fuzzySort = (rowA, rowB, columnId) => {
     return dir === 0 ? rowA.getValue(columnId).localeCompare(rowB.getValue(columnId)) : dir
 }
 
-export default function ListTable({ title, data, columns, enableFiltering }) {
-    const [globalFilter, setGlobalFilter] = useState('')
-
+export default function ListTable({ data, columns, globalFilter, setGlobalFilter, enableFiltering = true, enableSorting = true }) {
     const table = useReactTable({
         data,
         columns,
@@ -73,90 +63,59 @@ export default function ListTable({ title, data, columns, enableFiltering }) {
         getFilteredRowModel: getFilteredRowModel(),
         getSortedRowModel: getSortedRowModel(),
         enableGlobalFilter: enableFiltering,
+        enableSorting: enableSorting,
     })
 
     return (
-        <Card.Root>
-            <Card.Header flexDir={"row"} justifyContent="space-between" alignItems="center">
-                {title && <Card.Title>{title}</Card.Title>}
-                {enableFiltering && (
-                    <Box maxW="300px">
-                        <SearchField
-                            value={globalFilter ?? ''}
-                            onChange={value => setGlobalFilter(String(value))}
-                            placeholder="Search..."
-                            debounce={300}
-                        />
-                    </Box>
-                )}
-                <Menu.Root>
-                    <Menu.Trigger asChild>
-                        <IconButton size={'sm'} bg={'#085646'}>
-                            <LuChevronDown />
-                        </IconButton>
-                    </Menu.Trigger>
-                    <Portal>
-                        <Menu.Positioner>
-                            <Menu.Content>
-                                <Menu.Item value="new-component">Tilføj nyt Objekt</Menu.Item>
-                                <Menu.Item value="new-txt">Tilføj ny type</Menu.Item>
-                            </Menu.Content>
-                        </Menu.Positioner>
-                    </Portal>
-                </Menu.Root>
-            </Card.Header>
-            <Card.Body>
-                <Table.Root striped size="md">
-                    <Table.Header>
-                        {table.getHeaderGroups().map(headerGroup => (
-                            <Table.Row key={headerGroup.id}>
-                                {headerGroup.headers.map(header => (
-                                    <Table.ColumnHeader
-                                        key={header.id}
-                                        cursor={header.column.getCanSort() ? 'pointer' : 'default'}
-                                        onClick={header.column.getToggleSortingHandler()}
-                                        userSelect="none"
-                                    >
-                                        <Box display="flex" alignItems="center">
-                                            {header.isPlaceholder
-                                                ? null
-                                                : flexRender(
-                                                    header.column.columnDef.header,
-                                                    header.getContext()
-                                                )}
-                                            {header.column.getCanSort() && (
-                                                <Box ml={2}>
-                                                    <FontAwesomeIcon
-                                                        icon={
-                                                            header.column.getIsSorted() === 'asc'
-                                                                ? faSortUp
-                                                                : header.column.getIsSorted() === 'desc'
-                                                                    ? faSortDown
-                                                                    : faSort
-                                                        }
-                                                        size="sm"
-                                                    />
-                                                </Box>
-                                            )}
+        <Table.Root striped size="md">
+            <Table.Header>
+                {table.getHeaderGroups().map(headerGroup => (
+                    <Table.Row key={headerGroup.id}>
+                        {headerGroup.headers.map(header => (
+                            <Table.ColumnHeader
+                                key={header.id}
+                                cursor={header.column.getCanSort() ? 'pointer' : 'default'}
+                                onClick={header.column.getToggleSortingHandler()}
+                                userSelect="none"
+                            >
+                                <Box display="flex" alignItems="center">
+                                    {header.isPlaceholder
+                                        ? null
+                                        : flexRender(
+                                            header.column.columnDef.header,
+                                            header.getContext()
+                                        )}
+                                    {header.column.getCanSort() && (
+                                        <Box ml={2}>
+                                            <FontAwesomeIcon
+                                                icon={
+                                                    header.column.getIsSorted() === 'asc'
+                                                        ? faSortUp
+                                                        : header.column.getIsSorted() === 'desc'
+                                                            ? faSortDown
+                                                            : faSort
+                                                }
+                                                size="sm"
+                                            />
                                         </Box>
-                                    </Table.ColumnHeader>
-                                ))}
-                            </Table.Row>
+                                    )}
+                                </Box>
+                            </Table.ColumnHeader>
                         ))}
-                    </Table.Header>
-                    <Table.Body>
-                        {table.getRowModel().rows.map(row => (
-                            <Table.Row key={row.id}>
-                                {row.getVisibleCells().map(cell => (
-                                    <Table.Cell key={cell.id}>
-                                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                    </Table.Cell>
-                                ))}
-                            </Table.Row>
+                    </Table.Row>
+                ))}
+            </Table.Header>
+            <Table.Body>
+                {table.getRowModel().rows.map(row => (
+                    <Table.Row key={row.id}>
+                        {row.getVisibleCells().map(cell => (
+                            <Table.Cell key={cell.id}>
+                                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                            </Table.Cell>
                         ))}
-                    </Table.Body>
-                </Table.Root>
-            </Card.Body>
-        </Card.Root>
+                    </Table.Row>
+                ))}
+            </Table.Body>
+        </Table.Root>
     )
 }
