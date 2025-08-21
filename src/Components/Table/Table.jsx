@@ -2,6 +2,11 @@ import {
     Card,
     Table,
     Box,
+    ButtonGroup,
+    Button,
+    IconButton,
+    Menu,
+    Portal,
 } from '@chakra-ui/react'
 import {
     useReactTable,
@@ -16,38 +21,38 @@ import {
 } from '@tanstack/match-sorter-utils'
 import React, { useState } from 'react'
 import SearchField from '../SearchField/SearchField'
-import Button from '../Button/Button'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSort, faSortUp, faSortDown } from '@fortawesome/free-solid-svg-icons'
+import { LuChevronDown } from 'react-icons/lu'
 
 // Define a custom fuzzy filter function that will apply ranking info to rows
 const fuzzyFilter = (row, columnId, value, addMeta) => {
-  // Rank the item
-  const itemRank = rankItem(row.getValue(columnId), value)
+    // Rank the item
+    const itemRank = rankItem(row.getValue(columnId), value)
 
-  // Store the itemRank info
-  addMeta({
-    itemRank,
-  })
+    // Store the itemRank info
+    addMeta({
+        itemRank,
+    })
 
-  // Return if the item should be filtered in/out
-  return itemRank.passed
+    // Return if the item should be filtered in/out
+    return itemRank.passed
 }
 
 // Define a custom fuzzy sort function that will sort by rank if the row has ranking information
 const fuzzySort = (rowA, rowB, columnId) => {
-  let dir = 0
+    let dir = 0
 
-  // Only sort by rank if the column has ranking information
-  if (rowA.columnFiltersMeta[columnId]) {
-    dir = compareItems(
-      rowA.columnFiltersMeta[columnId]?.itemRank,
-      rowB.columnFiltersMeta[columnId]?.itemRank
-    )
-  }
+    // Only sort by rank if the column has ranking information
+    if (rowA.columnFiltersMeta[columnId]) {
+        dir = compareItems(
+            rowA.columnFiltersMeta[columnId]?.itemRank,
+            rowB.columnFiltersMeta[columnId]?.itemRank
+        )
+    }
 
-  // Provide an alphanumeric fallback for when the item ranks are equal
-  return dir === 0 ? rowA.getValue(columnId).localeCompare(rowB.getValue(columnId)) : dir
+    // Provide an alphanumeric fallback for when the item ranks are equal
+    return dir === 0 ? rowA.getValue(columnId).localeCompare(rowB.getValue(columnId)) : dir
 }
 
 export default function ListTable({ title, data, columns, enableFiltering }) {
@@ -84,7 +89,21 @@ export default function ListTable({ title, data, columns, enableFiltering }) {
                         />
                     </Box>
                 )}
-                <Button text={'Nyt Objekt'} />
+                <Menu.Root>
+                    <Menu.Trigger asChild>
+                        <IconButton size={'sm'} bg={'#085646'}>
+                            <LuChevronDown />
+                        </IconButton>
+                    </Menu.Trigger>
+                    <Portal>
+                        <Menu.Positioner>
+                            <Menu.Content>
+                                <Menu.Item value="new-component">Tilføj nyt Objekt</Menu.Item>
+                                <Menu.Item value="new-txt">Tilføj ny type</Menu.Item>
+                            </Menu.Content>
+                        </Menu.Positioner>
+                    </Portal>
+                </Menu.Root>
             </Card.Header>
             <Card.Body>
                 <Table.Root striped size="md">
@@ -92,7 +111,7 @@ export default function ListTable({ title, data, columns, enableFiltering }) {
                         {table.getHeaderGroups().map(headerGroup => (
                             <Table.Row key={headerGroup.id}>
                                 {headerGroup.headers.map(header => (
-                                    <Table.ColumnHeader 
+                                    <Table.ColumnHeader
                                         key={header.id}
                                         cursor={header.column.getCanSort() ? 'pointer' : 'default'}
                                         onClick={header.column.getToggleSortingHandler()}
@@ -107,14 +126,14 @@ export default function ListTable({ title, data, columns, enableFiltering }) {
                                                 )}
                                             {header.column.getCanSort() && (
                                                 <Box ml={2}>
-                                                    <FontAwesomeIcon 
+                                                    <FontAwesomeIcon
                                                         icon={
-                                                            header.column.getIsSorted() === 'asc' 
-                                                                ? faSortUp 
-                                                                : header.column.getIsSorted() === 'desc' 
-                                                                ? faSortDown 
-                                                                : faSort
-                                                        } 
+                                                            header.column.getIsSorted() === 'asc'
+                                                                ? faSortUp
+                                                                : header.column.getIsSorted() === 'desc'
+                                                                    ? faSortDown
+                                                                    : faSort
+                                                        }
                                                         size="sm"
                                                     />
                                                 </Box>
