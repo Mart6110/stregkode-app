@@ -66,8 +66,6 @@ function InventoryPage() {
         // Create inventory item
         await createInventoryItem({
           name: formData.name,
-          description: formData.description,
-          category: formData.category,
           stock: parseInt(formData.stock) || 0,
           location: formData.location,
           barcode: formData.barcode,
