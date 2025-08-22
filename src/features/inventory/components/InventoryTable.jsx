@@ -1,21 +1,20 @@
 import {
-    Table,
     Box,
+    Table,
 } from '@chakra-ui/react'
+import { faSort, faSortDown, faSortUp } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
-    useReactTable,
+    compareItems,
+    rankItem,
+} from '@tanstack/match-sorter-utils'
+import {
+    flexRender,
     getCoreRowModel,
     getFilteredRowModel,
     getSortedRowModel,
-    flexRender,
+    useReactTable,
 } from '@tanstack/react-table'
-import {
-    rankItem,
-    compareItems,
-} from '@tanstack/match-sorter-utils'
-import React, { useState } from 'react'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faSort, faSortUp, faSortDown } from '@fortawesome/free-solid-svg-icons'
 
 // Define a custom fuzzy filter function that will apply ranking info to rows
 const fuzzyFilter = (row, columnId, value, addMeta) => {

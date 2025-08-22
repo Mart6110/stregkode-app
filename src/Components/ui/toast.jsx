@@ -1,4 +1,3 @@
-import { createSystem } from "@chakra-ui/react"
 
 // Simple toast notification system
 let toastCounter = 0

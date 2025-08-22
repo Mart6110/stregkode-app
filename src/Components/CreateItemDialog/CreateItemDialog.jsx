@@ -7,7 +7,7 @@ import {
     VStack
 } from "@chakra-ui/react"
 import { useState } from "react"
-import { LuPlus, LuX } from "react-icons/lu"
+import { LuPlus } from "react-icons/lu"
 
 export function CreateItemDialog({ isOpen, onClose, onSubmit, type = "object", isLoading = false }) {
     const [formData, setFormData] = useState({

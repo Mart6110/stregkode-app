@@ -1,22 +1,21 @@
 import {
-  Box,
-  Card,
-  IconButton,
-  Menu,
-  Spinner,
-  Text,
-  Alert,
-  EmptyState,
+    Alert,
+    Box,
+    Card,
+    EmptyState,
+    IconButton,
+    Menu,
+    Spinner
 } from "@chakra-ui/react"
-import { Tooltip } from "../../../components/ui/tooltip"
 import { useState } from "react"
 import { LuChevronDown, LuPackage, LuRefreshCw } from 'react-icons/lu'
-import { useGetInventoryQuery, useCreateInventoryItemMutation, useCreateInventoryTypeMutation } from "../inventoryAPI"
-import { useInventoryOperations, handleInventoryError } from "../inventoryUtils"
-import { InventoryTable } from "../components/InventoryTable"
-import SearchField from "../../../components/SearchField"
 import { CreateItemDialog } from "../../../components/CreateItemDialog"
-import { showSuccessToast, showErrorToast } from "../../../components/ui/toast"
+import SearchField from "../../../components/SearchField"
+import { showErrorToast, showSuccessToast } from "../../../components/ui/toast"
+import { Tooltip } from "../../../components/ui/tooltip"
+import { InventoryTable } from "../components/InventoryTable"
+import { useCreateInventoryItemMutation, useCreateInventoryTypeMutation, useGetInventoryQuery } from "../inventoryAPI"
+import { handleInventoryError, useInventoryOperations } from "../inventoryUtils"
 
 function InventoryPage() {
   const [searchValue, setSearchValue] = useState('')
