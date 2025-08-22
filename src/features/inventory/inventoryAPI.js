@@ -15,7 +15,7 @@ export const inventoryApi = createApi({
       return headers
     },
   }),
-  tagTypes: ['Inventory', 'Component'], // Add tag types for caching
+  tagTypes: ['Inventory', 'Component', 'Type'], // Add tag types for caching
   endpoints: (builder) => ({
     // Get all inventory items
     getInventory: builder.query({
@@ -57,6 +57,22 @@ export const inventoryApi = createApi({
       }),
       invalidatesTags: ['Inventory'],
     }),
+
+    // Create new inventory type
+    createInventoryType: builder.mutation({
+      query: (newType) => ({
+        url: '/types',
+        method: 'POST',
+        body: newType,
+      }),
+      invalidatesTags: ['Type'],
+    }),
+
+    // Get all inventory types
+    getInventoryTypes: builder.query({
+      query: () => '/types',
+      providesTags: ['Type'],
+    }),
   }),
 })
 
@@ -67,4 +83,6 @@ export const {
   useCreateInventoryItemMutation,
   useUpdateInventoryItemMutation,
   useDeleteInventoryItemMutation,
+  useCreateInventoryTypeMutation,
+  useGetInventoryTypesQuery,
 } = inventoryApi

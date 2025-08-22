@@ -11,13 +11,19 @@ import {
 import { Tooltip } from "../../../components/ui/tooltip"
 import { useState } from "react"
 import { LuChevronDown, LuPackage, LuRefreshCw } from 'react-icons/lu'
-import { useGetInventoryQuery } from "../inventoryAPI"
+import { useGetInventoryQuery, useCreateInventoryItemMutation, useCreateInventoryTypeMutation } from "../inventoryAPI"
 import { useInventoryOperations, handleInventoryError } from "../inventoryUtils"
 import { InventoryTable } from "../components/InventoryTable"
 import SearchField from "../../../components/SearchField"
+import { CreateItemDialog } from "../../../components/CreateItemDialog"
+import { showSuccessToast, showErrorToast } from "../../../components/ui/toast"
 
 function InventoryPage() {
   const [searchValue, setSearchValue] = useState('')
+  const [dialogState, setDialogState] = useState({
+    isOpen: false,
+    type: 'object' // 'object' or 'type'
+  })
 
   // RTK Query hook to fetch inventory data
   const {
@@ -27,6 +33,10 @@ function InventoryPage() {
     refetch
   } = useGetInventoryQuery()
 
+  // RTK Query mutations
+  const [createInventoryItem, { isLoading: isCreatingItem }] = useCreateInventoryItemMutation()
+  const [createInventoryType, { isLoading: isCreatingType }] = useCreateInventoryTypeMutation()
+
   // Custom inventory operations from useApi.js
   const { refreshInventory, prefetchInventoryItem } = useInventoryOperations()
 
@@ -34,6 +44,61 @@ function InventoryPage() {
   const handleRefresh = () => {
     refreshInventory()
     refetch()
+  }
+
+  // Handle menu item selection
+  const handleMenuSelect = (value) => {
+    if (value === 'new-component') {
+      setDialogState({ isOpen: true, type: 'object' })
+    } else if (value === 'new-type') {
+      setDialogState({ isOpen: true, type: 'type' })
+    }
+  }
+
+  // Handle dialog close
+  const handleDialogClose = () => {
+    setDialogState({ isOpen: false, type: 'object' })
+  }
+
+  // Handle form submission
+  const handleItemSubmit = async (formData) => {
+    try {
+      if (dialogState.type === 'object') {
+        // Create inventory item
+        await createInventoryItem({
+          name: formData.name,
+          description: formData.description,
+          category: formData.category,
+          stock: parseInt(formData.stock) || 0,
+          location: formData.location,
+          barcode: formData.barcode,
+          department: formData.category || 'Ukendt' // Map category to department
+        }).unwrap()
+        
+        showSuccessToast(
+          "Objekt oprettet",
+          `${formData.name} blev oprettet med succes`
+        )
+      } else if (dialogState.type === 'type') {
+        // Create inventory type
+        await createInventoryType({
+          name: formData.name,
+          description: formData.description
+        }).unwrap()
+        
+        showSuccessToast(
+          "Type oprettet", 
+          `${formData.name} blev oprettet med succes`
+        )
+      }
+      
+    } catch (error) {
+      console.error('Error creating item:', error)
+      showErrorToast(
+        "Fejl ved oprettelse",
+        "Der opstod en fejl under oprettelsen. Prøv igen."
+      )
+    }
   }
 
   // Table columns configuration
@@ -86,8 +151,18 @@ function InventoryPage() {
                   </Menu.Trigger>
                   <Menu.Positioner>
                     <Menu.Content>
-                      <Menu.Item value="new-component">Tilføj nyt Objekt</Menu.Item>
-                      <Menu.Item value="new-type">Tilføj ny type</Menu.Item>
+                      <Menu.Item 
+                        value="new-component" 
+                        onClick={() => handleMenuSelect('new-component')}
+                      >
+                        Tilføj nyt Objekt
+                      </Menu.Item>
+                      <Menu.Item 
+                        value="new-type" 
+                        onClick={() => handleMenuSelect('new-type')}
+                      >
+                        Tilføj ny type
+                      </Menu.Item>
                     </Menu.Content>
                   </Menu.Positioner>
                 </Menu.Root>
@@ -140,6 +215,15 @@ function InventoryPage() {
           )}
         </Card.Body>
       </Card.Root>
+
+      {/* Create Item Dialog */}
+      <CreateItemDialog
+        isOpen={dialogState.isOpen}
+        onClose={handleDialogClose}
+        onSubmit={handleItemSubmit}
+        type={dialogState.type}
+        isLoading={dialogState.type === 'object' ? isCreatingItem : isCreatingType}
+      />
     </Box>
   )
 }
