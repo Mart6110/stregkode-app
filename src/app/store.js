@@ -1,14 +1,14 @@
 import { configureStore } from '@reduxjs/toolkit'
-import { apiSlice } from './api/apiSlice'
+import { inventoryApi } from '../features/inventory/inventoryAPI'
 
 export const store = configureStore({
   reducer: {
     // Add the generated reducer as a specific top-level slice
-    [apiSlice.reducerPath]: apiSlice.reducer,
+    [inventoryApi.reducerPath]: inventoryApi.reducer,
     // Add other reducers here as needed
   },
   // Adding the api middleware enables caching, invalidation, polling,
   // and other useful features of `rtk-query`.
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(apiSlice.middleware),
+    getDefaultMiddleware().concat(inventoryApi.middleware),
 })

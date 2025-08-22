@@ -1,7 +1,7 @@
 import { useDispatch } from 'react-redux'
-import { inventoryApi } from '../features/inventory/inventoryAPI'
+import { inventoryApi } from './inventoryAPI'
 
-// Custom hooks for common API operations
+// Custom hooks for common inventory operations
 export const useInventoryOperations = () => {
   const dispatch = useDispatch()
 
@@ -19,8 +19,8 @@ export const useInventoryOperations = () => {
   }
 }
 
-// Error handling helper
-export const handleApiError = (error) => {
+// Error handling helper for inventory operations
+export const handleInventoryError = (error) => {
   if (error?.data?.message) {
     return error.data.message
   }

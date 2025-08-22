@@ -8,15 +8,15 @@ import {
   Alert,
   EmptyState,
 } from "@chakra-ui/react"
-import { Tooltip } from "../Components/ui/tooltip"
+import { Tooltip } from "../../../components/ui/tooltip"
 import { useState } from "react"
 import { LuChevronDown, LuPackage, LuRefreshCw } from 'react-icons/lu'
-import { useGetInventoryQuery } from "../store/api/apiSlice"
-import { useInventoryOperations, handleApiError } from "../hooks/useApi"
-import ListTable from "../Components/Table/Table"
-import SearchField from "../Components/SearchField/SearchField"
+import { useGetInventoryQuery } from "../inventoryAPI"
+import { useInventoryOperations, handleInventoryError } from "../inventoryUtils"
+import { InventoryTable } from "../components/InventoryTable"
+import SearchField from "../../../components/SearchField"
 
-function Main() {
+function InventoryPage() {
   const [searchValue, setSearchValue] = useState('')
 
   // RTK Query hook to fetch inventory data
@@ -35,8 +35,6 @@ function Main() {
     refreshInventory()
     refetch()
   }
-
-  console.log("error:", error)
 
   // Table columns configuration
   const columns = [
@@ -110,14 +108,14 @@ function Main() {
               <Alert.Content>
                 <Alert.Title>Fejl ved indlæsning</Alert.Title>
                 <Alert.Description>
-                  {handleApiError(error)}
+                  {handleInventoryError(error)}
                 </Alert.Description>
               </Alert.Content>
             </Alert.Root>
           )}
 
           {!isLoading && !error && inventory && inventory.length > 0 && (
-            <ListTable
+            <InventoryTable
               data={inventory}
               columns={columns}
               globalFilter={searchValue}
@@ -146,4 +144,4 @@ function Main() {
   )
 }
 
-export default Main
+export default InventoryPage

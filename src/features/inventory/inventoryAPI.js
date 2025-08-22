@@ -1,8 +1,8 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 
-// Define our single API slice object
-export const apiSlice = createApi({
-  reducerPath: 'api',
+// Define the inventory API slice
+export const inventoryApi = createApi({
+  reducerPath: 'inventoryApi',
   baseQuery: fetchBaseQuery({
     baseUrl: '/api', // Change this to your actual API base URL
     prepareHeaders: (headers, { getState }) => {
@@ -67,4 +67,4 @@ export const {
   useCreateInventoryItemMutation,
   useUpdateInventoryItemMutation,
   useDeleteInventoryItemMutation,
-} = apiSlice
+} = inventoryApi

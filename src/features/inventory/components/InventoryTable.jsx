@@ -47,7 +47,7 @@ const fuzzySort = (rowA, rowB, columnId) => {
     return dir === 0 ? rowA.getValue(columnId).localeCompare(rowB.getValue(columnId)) : dir
 }
 
-export default function ListTable({ data, columns, globalFilter, setGlobalFilter, enableFiltering = true, enableSorting = true }) {
+export function InventoryTable({ data, columns, globalFilter, setGlobalFilter, enableFiltering = true, enableSorting = true }) {
     const table = useReactTable({
         data,
         columns,

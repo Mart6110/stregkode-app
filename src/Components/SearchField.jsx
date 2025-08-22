@@ -1,7 +1,7 @@
 import { Field, Input } from "@chakra-ui/react"
 import React from 'react'
 
-const SearchField = ({ 
+export const SearchField = ({ 
     value: initialValue, 
     onChange, 
     placeholder = "Search...", 
