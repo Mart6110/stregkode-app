@@ -1,29 +1,44 @@
-import { Box, Heading, Card, IconButton, Menu, Portal } from "@chakra-ui/react"
+import {
+  Box,
+  Card,
+  IconButton,
+  Menu,
+  Spinner,
+  Text,
+  Alert,
+  EmptyState,
+} from "@chakra-ui/react"
+import { Tooltip } from "../Components/ui/tooltip"
 import { useState } from "react"
-import { LuChevronDown } from 'react-icons/lu'
-import Table from "../Components/Table/Table"
+import { LuChevronDown, LuPackage, LuRefreshCw } from 'react-icons/lu'
+import { useGetInventoryQuery } from "../store/api/apiSlice"
+import { useInventoryOperations, handleApiError } from "../hooks/useApi"
+import ListTable from "../Components/Table/Table"
 import SearchField from "../Components/SearchField/SearchField"
 
 function Main() {
-  const [globalFilter, setGlobalFilter] = useState('')
+  const [searchValue, setSearchValue] = useState('')
 
-  // Sample data for the table - Electronics inventory
-  const data = [
-    { id: 1, name: "Arduino Uno R3", stock: 25, department: "Microcontrollers" },
-    { id: 2, name: "LED Red 5mm", stock: 100, department: "LEDs" },
-    { id: 3, name: "LED Blue 5mm", stock: 75, department: "LEDs" },
-    { id: 4, name: "Resistor 220Ω", stock: 500, department: "Resistors" },
-    { id: 5, name: "Breadboard 830", stock: 15, department: "Prototyping" },
-    { id: 6, name: "Servo Motor SG90", stock: 8, department: "Motors" },
-    { id: 7, name: "Ultrasonic Sensor HC-SR04", stock: 12, department: "Sensors" },
-    { id: 8, name: "ESP32 DevKit", stock: 20, department: "Microcontrollers" },
-    { id: 9, name: "Jumper Wires M-M", stock: 200, department: "Wiring" },
-    { id: 10, name: "Capacitor 100µF", stock: 50, department: "Capacitors" },
-    { id: 11, name: "RGB LED Strip", stock: 5, department: "LEDs" },
-    { id: 12, name: "Push Button", stock: 30, department: "Switches" },
-  ]
+  // RTK Query hook to fetch inventory data
+  const {
+    data: inventory = [],
+    error,
+    isLoading,
+    refetch
+  } = useGetInventoryQuery()
 
-  // Column definitions for the table
+  // Custom inventory operations from useApi.js
+  const { refreshInventory, prefetchInventoryItem } = useInventoryOperations()
+
+  // Handle refresh button click
+  const handleRefresh = () => {
+    refreshInventory()
+    refetch()
+  }
+
+  console.log("error:", error)
+
+  // Table columns configuration
   const columns = [
     {
       accessorKey: 'id',
@@ -46,41 +61,85 @@ function Main() {
   return (
     <Box p={6}>
       <Card.Root>
-        <Card.Header flexDir={"row"} justifyContent="space-between" alignItems="center">
-          <Card.Title>Inventarliste</Card.Title>
-          <Box maxW="300px">
-            <SearchField
-              value={globalFilter ?? ''}
-              onChange={value => setGlobalFilter(String(value))}
-              placeholder="Search..."
-              debounce={300}
-            />
+        <Card.Header>
+          <Box display="flex" justifyContent="space-between" alignItems="center" width="100%">
+            <Card.Title>Inventar</Card.Title>
+            <Tooltip content="Søg efter varer i inventaret" showArrow placement="bottom">
+              <Box maxW="300px">
+                <SearchField
+                  value={searchValue}
+                  onChange={setSearchValue}
+                  placeholder="Søg i inventar..."
+                  debounce={300}
+                />
+              </Box>
+            </Tooltip>
+            <Box display="flex" gap={2}>
+              <Tooltip content="Opdater inventar data" showArrow>
+                <IconButton size="sm" bg="#085646" color="white" onClick={handleRefresh}>
+                  <LuRefreshCw />
+                </IconButton>
+              </Tooltip>
+                <Menu.Root>
+                  <Menu.Trigger asChild>
+                    <IconButton size="sm" bg="#085646" color="white">
+                      <LuChevronDown />
+                    </IconButton>
+                  </Menu.Trigger>
+                  <Menu.Positioner>
+                    <Menu.Content>
+                      <Menu.Item value="new-component">Tilføj nyt Objekt</Menu.Item>
+                      <Menu.Item value="new-type">Tilføj ny type</Menu.Item>
+                    </Menu.Content>
+                  </Menu.Positioner>
+                </Menu.Root>
+            </Box>
           </Box>
-          <Menu.Root>
-            <Menu.Trigger asChild>
-              <IconButton size={'sm'} bg={'#085646'}>
-                <LuChevronDown />
-              </IconButton>
-            </Menu.Trigger>
-            <Portal>
-              <Menu.Positioner>
-                <Menu.Content>
-                  <Menu.Item value="new-component">Tilføj nyt Objekt</Menu.Item>
-                  <Menu.Item value="new-txt">Tilføj ny type</Menu.Item>
-                </Menu.Content>
-              </Menu.Positioner>
-            </Portal>
-          </Menu.Root>
         </Card.Header>
+
         <Card.Body>
-          <Table 
-            data={data} 
-            columns={columns}
-            globalFilter={globalFilter}
-            setGlobalFilter={setGlobalFilter}
-            enableSorting={true}
-            enableFiltering={true}
-          />
+          {isLoading && (
+            <Box display="flex" justifyContent="center" p={8}>
+              <Spinner size="lg" />
+            </Box>
+          )}
+
+          {error && (
+            <Alert.Root status="error" mb={4}>
+              <Alert.Indicator />
+              <Alert.Content>
+                <Alert.Title>Fejl ved indlæsning</Alert.Title>
+                <Alert.Description>
+                  {handleApiError(error)}
+                </Alert.Description>
+              </Alert.Content>
+            </Alert.Root>
+          )}
+
+          {!isLoading && !error && inventory && inventory.length > 0 && (
+            <ListTable
+              data={inventory}
+              columns={columns}
+              globalFilter={searchValue}
+              setGlobalFilter={setSearchValue}
+              enableSorting={true}
+              enableFiltering={true}
+            />
+          )}
+
+          {!isLoading && !error && (!inventory || inventory.length === 0) && (
+            <EmptyState.Root>
+              <EmptyState.Content>
+                <EmptyState.Indicator>
+                  <LuPackage />
+                </EmptyState.Indicator>
+                <EmptyState.Title>Intet inventar tilgængeligt</EmptyState.Title>
+                <EmptyState.Description>
+                  Der er ingen varer i systemet. Tilføj din første vare for at komme i gang.
+                </EmptyState.Description>
+              </EmptyState.Content>
+            </EmptyState.Root>
+          )}
         </Card.Body>
       </Card.Root>
     </Box>
