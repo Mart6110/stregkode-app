@@ -176,7 +176,7 @@ function InventoryPage() {
             </Box>
           )}
 
-          {error && (
+          {/* {error && (
             <Alert.Root status="error" mb={4}>
               <Alert.Indicator />
               <Alert.Content>
@@ -186,7 +186,7 @@ function InventoryPage() {
                 </Alert.Description>
               </Alert.Content>
             </Alert.Root>
-          )}
+          )} */}
 
           {!isLoading && !error && inventory && inventory.length > 0 && (
             <InventoryTable
@@ -199,7 +199,7 @@ function InventoryPage() {
             />
           )}
 
-          {!isLoading && !error && (!inventory || inventory.length === 0) && (
+          {!isLoading && /* !error && */ (!inventory || inventory.length === 0) && (
             <EmptyState.Root>
               <EmptyState.Content>
                 <EmptyState.Indicator>

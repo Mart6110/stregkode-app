@@ -31,7 +31,6 @@ export function CreateItemDialog({ isOpen, onClose, onSubmit, type = "object", i
         // Reset form
         setFormData({
             name: "",
-            description: "",
             category: "",
             stock: "",
             location: "",
